@@ -1,3 +1,3 @@
-# Daily Commits
+# Automation
 
 This repository tracks my daily coding activity.
