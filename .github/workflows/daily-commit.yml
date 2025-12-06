@@ -1,0 +1,48 @@
+name: Daily Commit Automation
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # runs at 03:00 UTC daily (8:30 AM IST)
+  workflow_dispatch: {}  # allows manual trigger from GitHub UI
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # fetch all history for all branches
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Configure Git
+        run: |
+          git config user.name "techSaswata"
+          git config user.email "saswata.24bcs10248@sst.scaler.com"
+      
+      - name: Make daily commits
+        run: |
+          # Random number of commits between 1 and 10
+          NUM_COMMITS=$((1 + RANDOM % 10))
+          echo "🎲 Making $NUM_COMMITS commit(s) today..."
+          
+          for i in $(seq 1 $NUM_COMMITS); do
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+            echo "Commit #$i: $TIMESTAMP" >> daily_log.txt
+            git add daily_log.txt
+            git commit -m "Daily update $(date -u +"%B %d, %Y") - commit #$i" || echo "No changes to commit"
+            echo "  ✓ Commit $i/$NUM_COMMITS created"
+            sleep 2  # small delay between commits
+          done
+      
+      - name: Push changes
+        run: |
+          echo "📤 Pushing all commits to GitHub..."
+          git push origin main || git push origin master
+          echo "✅ Successfully pushed commits!"
+
