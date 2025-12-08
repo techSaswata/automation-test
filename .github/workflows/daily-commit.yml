@@ -30,15 +30,18 @@ jobs:
       
       - name: Make daily commits
         run: |
+          # Set timezone to IST
+          export TZ=Asia/Kolkata
+          
           # Random number of commits between 1 and 10
           NUM_COMMITS=$((1 + RANDOM % 10))
           echo "🎲 Making $NUM_COMMITS commit(s) today..."
           
           for i in $(seq 1 $NUM_COMMITS); do
-            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+            TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S IST")
             echo "Commit #$i: $TIMESTAMP" >> daily_log.txt
             git add daily_log.txt
-            git commit -m "Daily update $(date -u +"%B %d, %Y") - commit #$i" || echo "No changes to commit"
+            git commit -m "Daily update $(date +"%B %d, %Y %I:%M %p IST") - commit #$i" || echo "No changes to commit"
             echo "  ✓ Commit $i/$NUM_COMMITS created"
             sleep 2  # small delay between commits
           done
